@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "__locale": "cpp",
+        "__string": "cpp",
+        "concepts": "cpp",
+        "cstdlib": "cpp",
+        "memory_resource": "cpp",
+        "locale": "cpp",
+        "ostream": "cpp",
+        "system_error": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp",
+        "version": "cpp",
+        "*.tcc": "cpp",
+        "numeric": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "variant": "cpp"
+    }
+}
