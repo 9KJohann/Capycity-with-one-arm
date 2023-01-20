@@ -222,9 +222,11 @@ void CapycitySim::print()
         totalCosts += building->getTotalCosts() * counter;
         std::cout << building->getName() << " kostet $" << building->getTotalCosts() << ":" << std::endl;
         std::cout << "\t- Grundpreis $" << building->getBasePrice() << std::endl;
-        for (auto material : building->getMaterials())
+        for (auto materialCount : building->getMaterials())
         {
-            std::cout << "\t- " << material->getName() << " $" << material->getCost() << std::endl;
+            auto material = materialCount.first;
+            int count = materialCount.second;
+            std::cout << "\t- " << count << "x " << material->getName() << " $" << material->getCost() << std::endl;
         }
     }
     std::cout << std::endl;

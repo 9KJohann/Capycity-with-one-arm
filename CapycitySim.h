@@ -2,6 +2,7 @@
 #define CAPYCITY_CAPYCITYSIM_H
 #include "Building.h"
 #include "Material.h"
+#include <map>
 
 class CapycitySim {
 private:

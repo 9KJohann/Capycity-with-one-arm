@@ -1,6 +1,6 @@
 #ifndef CAPYCITY_BUILDING_H
 #define CAPYCITY_BUILDING_H
-#include <vector>
+#include <map>
 #include "Material.h"
 
 class Building
@@ -9,10 +9,10 @@ protected:
     int _basePrice;
     char _label;
     char *_name;
-    std::vector<Material *> _materials;
+    std::map<Material *, int> _materials;
 
 protected:
-    Building(int basePrice, char label, char *name, std::vector<Material *> materials);
+    Building(int basePrice, char label, char *name, std::map<Material *, int> materials);
 
 public:
     char *getName() const;
@@ -21,7 +21,7 @@ public:
 
     int getBasePrice() const;
 
-    std::vector<Material *> getMaterials() const;
+    std::map<Material *, int> getMaterials() const;
 
     int getTotalCosts() const;
 };

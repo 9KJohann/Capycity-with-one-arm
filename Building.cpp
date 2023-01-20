@@ -1,6 +1,6 @@
 #include "Building.h"
 
-Building::Building(int basePrice, char label, char *name, std::vector<Material *> materials) : _basePrice(basePrice),
+Building::Building(int basePrice, char label, char *name, std::map<Material *,int> materials) : _basePrice(basePrice),
                                                                                                _label(label), _name(name),
                                                                                                _materials(materials) {}
 
@@ -10,7 +10,7 @@ char Building::getLabel() const { return _label; }
 
 int Building::getBasePrice() const { return _basePrice; }
 
-std::vector<Material *> Building::getMaterials() const
+std::map<Material *, int> Building::getMaterials() const
 {
     return _materials;
 }
@@ -18,8 +18,10 @@ std::vector<Material *> Building::getMaterials() const
 int Building::getTotalCosts() const
 {
     int materialCosts = 0;
-    for (auto material : _materials)
+    for (auto materialCount : _materials)
     {
+        Material* material = materialCount.first;
+        int count = materialCount.second;
         materialCosts += material->getCost();
     }
     return _basePrice + materialCosts;
@@ -28,8 +30,7 @@ int Building::getTotalCosts() const
 WaterEnergyPlant *WaterEnergyPlant::_waterEnergyPlant{nullptr};
 
 WaterEnergyPlant::WaterEnergyPlant() : Building(1, 'W', "Wasserkraftwerk",
-                                                {Wood::getInstance(), Wood::getInstance(), Plastic::getInstance(), Plastic::getInstance(),
-                                                 Metal::getInstance()}) {}
+                                                {{Wood::getInstance(), 4}, {Plastic::getInstance(), 3}, {Metal::getInstance(), 4}}) {}
 
 WaterEnergyPlant *WaterEnergyPlant::getInstance()
 {
@@ -43,8 +44,7 @@ WaterEnergyPlant *WaterEnergyPlant::getInstance()
 SolarEnergyPlant *SolarEnergyPlant::_solarEnergyPlant{nullptr};
 
 SolarEnergyPlant::SolarEnergyPlant() : Building(1, 'S', "Solarpanele",
-                                                {Plastic::getInstance(), Plastic::getInstance(), Plastic::getInstance(), Metal::getInstance(),
-                                                 Metal::getInstance()}) {}
+                                                {{Wood::getInstance(), 1}, {Plastic::getInstance(), 9}, {Metal::getInstance(), 3}}) {}
 
 SolarEnergyPlant *SolarEnergyPlant::getInstance()
 {
@@ -58,8 +58,7 @@ SolarEnergyPlant *SolarEnergyPlant::getInstance()
 WindEnergyPlant *WindEnergyPlant::_windEnergyPlant{nullptr};
 
 WindEnergyPlant::WindEnergyPlant() : Building(1, 'A', "Windkraftwerk",
-                                              {Wood::getInstance(), Wood::getInstance(), Plastic::getInstance(), Metal::getInstance(),
-                                               Metal::getInstance()}) {}
+                                              {{Wood::getInstance(), 7}, {Plastic::getInstance(), 3}, {Metal::getInstance(), 2}}) {}
 
 WindEnergyPlant *WindEnergyPlant::getInstance()
 {
