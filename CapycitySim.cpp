@@ -1,7 +1,6 @@
 #include "CapycitySim.h"
 #include <iostream>
 #include <map>
-
 int getInteger()
 {
     int result;
@@ -23,25 +22,12 @@ int getInteger()
 
 CapycitySim::CapycitySim(int length, int width) : _length(length), _width(width)
 {
-    _buildings = new Building *[length, width];
-    int i = 0;
-    for (int row = 0; row < width; row++)
-    {
-        for (int col = 0; col < length; col++)
-        {
-            _buildings[i++] = nullptr;
-        }
-    }
+    _blueprint = new Blueprint(length, width);
 }
 
 CapycitySim::~CapycitySim()
 {
-    delete[] _buildings;
-}
-
-bool CapycitySim::isInBounds(int x, int y, int length, int width)
-{
-    return 0 <= x && 0 <= x + length && x + length <= _length && 0 <= y && 0 <= y + width && y + width <= _width;
+    delete _blueprint;
 }
 
 void CapycitySim::menu()
@@ -51,7 +37,9 @@ void CapycitySim::menu()
         std::cout << "1) Gebaeude plazieren" << std::endl;
         std::cout << "2) Gebaeude loeschen" << std::endl;
         std::cout << "3) Aktuellen Plan anzeigen" << std::endl;
-        std::cout << "4) Beenden" << std::endl;
+        std::cout << "4) Neuen Plan anlegen" << std::endl;
+        std::cout << "5) Gespeicherte Pläne anzeigen" << std::endl;
+        std::cout << "6) Beenden" << std::endl;
         std::cout << std::endl;
 
         std::cout << "Bitte eine Zahl auswaehlen: ";
@@ -67,9 +55,24 @@ void CapycitySim::menu()
             deleteArea();
             break;
         case '3':
-            print();
+        std::cout << "Aktueller Plan:" << std::endl;
+            print(_blueprint);
             break;
         case '4':
+            addBlueprint();
+            break;
+        case '5':
+            std::sort(_blueprints.begin(), _blueprints.end(), [](Blueprint* a, Blueprint* b){
+                return a->getMetric() > b->getMetric();
+            });
+            std::cout << "Gespeicherte Plaene:" << std::endl;
+            std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+            for(Blueprint* blueprint: _blueprints) {
+                print(blueprint);
+                std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+            }
+            break;
+        case '6':
             return;
         default:
             std::cout << "Keine gueltige Eingabe." << std::endl;
@@ -122,28 +125,13 @@ void CapycitySim::placeBuilding()
     std::cout << "Breite des Gebaeudes eingeben: ";
     int width = getInteger();
 
-    if (!isInBounds(x, y, length, width))
+    try
     {
-        std::cout << "Eingabe liegt außerhalb des Baubereichs." << std::endl;
-        return;
+        _blueprint->setBuilding(building, x, y, length, width);
     }
-    for (int row = y; row < y + width; row++)
+    catch (const char *msg)
     {
-        for (int col = x; col < x + length; col++)
-        {
-            if (_buildings[row * _length + col] != nullptr)
-            {
-                std::cout << "Feld ist schon besetzt." << std::endl;
-                return;
-            }
-        }
-    }
-    for (int row = y; row < y + width; row++)
-    {
-        for (int col = x; col < x + length; col++)
-        {
-            _buildings[row * _length + col] = building;
-        }
+        std::cout << msg;
     }
 }
 
@@ -161,36 +149,33 @@ void CapycitySim::deleteArea()
     std::cout << "Breite fuer den zu loeschenden Bereich eingeben: ";
     int width = getInteger();
 
-    if (!isInBounds(x, y, length, width))
+    try
     {
-        std::cout << "Eingabe liegt außerhalb des Baubereichs." << std::endl;
-        return;
+        _blueprint->deleteBuildings(x, y, length, width);
     }
-
-    for (int row = y; row < y + width; row++)
+    catch (const char *msg)
     {
-        for (int col = x; col < x + length; col++)
-        {
-            _buildings[row * _length + col] = nullptr;
-        }
+        std::cout << msg;
     }
 }
 
-void CapycitySim::print()
+void CapycitySim::print(Blueprint* blueprint)
 {
     std::map<Building *, int> buildingsCounter;
+    Building** buildings = blueprint->getBuildings();
     int i = 0;
     for (int col = 0; col < _length + 4; col++)
     {
         std::cout << "-";
     }
     std::cout << std::endl;
-    for (int row = 0; row < _width; row++)
+
+    for (int row = 0; row < blueprint->getWidth(); row++)
     {
         std::cout << "| ";
-        for (int col = 0; col < _length; col++)
+        for (int col = 0; col < blueprint->getLength(); col++)
         {
-            Building *building = _buildings[i++];
+            Building *building = buildings[i++];
             if (building == nullptr)
             {
                 std::cout << "#";
@@ -239,6 +224,32 @@ void CapycitySim::print()
     }
 
     std::cout << "Gesammtkosten $" << totalCosts << std::endl;
+    std::cout << "Metrik: " << blueprint->getMetric() << std::endl; 
 
     system("pause");
+}
+
+void CapycitySim::addBlueprint()
+{
+    for (Blueprint *blueprint : _blueprints)
+    {
+        if (_blueprint->operator()(blueprint))
+        {
+            std::cout << "Plan ist bereits vorhanden. Soll der aktuelle verworfen werden? (j/N): ";
+            char input;
+            std::cin >> input;
+            if (tolower(input) == 'j')
+            {
+
+                _blueprint = new Blueprint(_length, _width);
+            }
+            else
+            {
+                std::cout << "Abbruch..." << std::endl;
+            }
+            return;
+        }
+    }
+    _blueprints.push_back(_blueprint);
+    _blueprint = new Blueprint(_length, _width);
 }

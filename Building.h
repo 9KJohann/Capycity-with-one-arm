@@ -9,10 +9,11 @@ protected:
     int _basePrice;
     char _label;
     char *_name;
+    int _capacity;
     std::map<Material *, int> _materials;
 
 protected:
-    Building(int basePrice, char label, char *name, std::map<Material *, int> materials);
+    Building(int basePrice, char label, char *name, std::map<Material *, int> materials, int capacity);
 
 public:
     char *getName() const;
@@ -24,6 +25,8 @@ public:
     std::map<Material *, int> getMaterials() const;
 
     int getTotalCosts() const;
+
+    int getCapacity() const;
 };
 
 class WaterEnergyPlant : public Building
